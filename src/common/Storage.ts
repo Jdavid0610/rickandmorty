@@ -18,4 +18,6 @@ export const getValue = (key: string): any => {
   return data;
 };
 
+export const removeValue = (key: string) => localStorage.removeItem(key);
+
 export const wipeValue = () => localStorage.clear();
