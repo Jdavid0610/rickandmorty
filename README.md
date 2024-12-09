@@ -1,50 +1,95 @@
-# React + TypeScript + Vite
+# Rick and Morty React Application
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This project is a React application using TypeScript and Vite, designed to explore characters from the Rick and Morty universe. It leverages GraphQL for data fetching and Zustand for state management.
 
-Currently, two official plugins are available:
+## Project Structure
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **src/**: Contains the main source code for the application.
+  - **components/**: Reusable React components, such as `CharacterItem` and `Layout`.
+  - **pages/**: Page components for routing, including `CharacterPage` and `NotFound`.
+  - **api/**: GraphQL API queries and types.
+  - **functions/**: Utility functions for character management.
+  - **storage/**: Zustand store for managing favorite characters.
+  - **common/**: Common utilities, such as local storage management.
+  - **router/**: Application routing configuration.
+- **public/**: Static assets like images and icons.
 
-## Expanding the ESLint configuration
+- **styles/**: Global styles and Tailwind CSS configuration.
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- **config/**: Configuration files for ESLint, Tailwind, and Vite.
 
-- Configure the top-level `parserOptions` property like this:
+## Running the Project
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+To run the project locally, follow these steps:
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+1. **Install Dependencies**: Ensure you have Node.js installed, then run:
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+   ```bash
+   npm install
+   ```
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+   or
+
+   ```bash
+   yarn install
+   ```
+
+2. **Start the Development Server**: Launch the Vite development server with:
+
+   ```bash
+   npm run dev
+   ```
+
+   or
+
+   ```bash
+   yarn dev
+   ```
+
+3. **Build for Production**: To create a production build, use:
+
+   ```bash
+   npm run build
+   ```
+
+   or
+
+   ```bash
+   yarn build
+   ```
+
+4. **Preview the Production Build**: You can preview the production build locally with:
+
+   ```bash
+   npm run preview
+   ```
+
+   or
+
+   ```bash
+   yarn preview
+   ```
+
+5. **Lint the Code**: To check for linting errors, run:
+
+   ```bash
+   npm run lint
+   ```
+
+   or
+
+   ```bash
+   yarn lint
+   ```
+
+## Additional Information
+
+- **GraphQL**: The application uses Apollo Client to fetch data from a GraphQL API. Ensure the `VITE_GRAPHQL_URI` environment variable is set to the correct endpoint.
+
+- **State Management**: Zustand is used for managing the state of favorite characters.
+
+- **Styling**: Tailwind CSS is used for styling the application.
+
+- **Routing**: React Router is used for navigating between different pages.
+
+For more detailed information on the configuration and setup, refer to the respective configuration files in the project.

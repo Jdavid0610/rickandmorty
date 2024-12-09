@@ -1,30 +1,19 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { CharacterItemProps } from "./characterItem.interface";
-import {
-  addCharacterToFavorite,
-  isCharacterFavorite,
-  removeCharacterFromFavorite,
-} from "@/functions/characterFunctions";
 import { CiHeart } from "react-icons/ci";
 import { FaHeart } from "react-icons/fa";
+import { useFavoritesCharactersStore } from "@/storage/favoritesCharactersStore";
 
-const CharacterItem = ({
-  name,
-  image,
-  species,
-  status,
-}: CharacterItemProps) => {
-  const [isFavorite, setIsFavorite] = useState(false);
-
-  useEffect(() => {
-    setIsFavorite(isCharacterFavorite(name!));
-  }, [name]);
+const CharacterItem = ({ name, image, species }: CharacterItemProps) => {
+  const { isCharacterFavorite, addFavorite, removeFavorite } =
+    useFavoritesCharactersStore();
+  const [isFavorite, setIsFavorite] = useState(isCharacterFavorite(name!));
 
   const toggleFavorite = () => {
     if (isFavorite) {
-      removeCharacterFromFavorite(name!);
+      removeFavorite(name!);
     } else {
-      addCharacterToFavorite(name!);
+      addFavorite(name!);
     }
     setIsFavorite(!isFavorite);
   };
@@ -39,7 +28,6 @@ const CharacterItem = ({
       <div className="flex-1">
         <h3 className="text-sm font-medium">{name}</h3>
         <p className="text-xs text-gray-500">{species}</p>
-        <p className="text-xs text-gray-500">{status}</p>
       </div>
 
       <div onClick={toggleFavorite}>

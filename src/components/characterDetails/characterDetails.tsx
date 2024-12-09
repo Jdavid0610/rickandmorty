@@ -3,25 +3,25 @@ import { useEffect, useState } from "react";
 import { CharacterDetailsProps } from "./characterDetails.interface";
 import { CiHeart } from "react-icons/ci";
 import { FaHeart } from "react-icons/fa";
-
-import {
-  addCharacterToFavorite,
-  isCharacterFavorite,
-  removeCharacterFromFavorite,
-} from "@/functions/characterFunctions";
+import { useFavoritesCharactersStore } from "@/storage/favoritesCharactersStore";
 
 const CharacterDetails = ({ name }: CharacterDetailsProps) => {
   const { loading, error, data } = getCharacters({ search: name || "" });
+  const { isCharacterFavorite, addFavorite, removeFavorite } =
+    useFavoritesCharactersStore();
+  console.log(isCharacterFavorite(name!));
+
   const [isFavorite, setIsFavorite] = useState(false);
+
   useEffect(() => {
     setIsFavorite(isCharacterFavorite(name!));
   }, [name]);
 
   const toggleFavorite = () => {
     if (isFavorite) {
-      removeCharacterFromFavorite(name!);
+      removeFavorite(name!);
     } else {
-      addCharacterToFavorite(name!);
+      addFavorite(name!);
     }
     setIsFavorite(!isFavorite);
   };
@@ -35,8 +35,8 @@ const CharacterDetails = ({ name }: CharacterDetailsProps) => {
     <div className="min-h-screen bg-white">
       {character ? (
         <div className="px-4 py-6">
-          <div className="mb-6">
-            <div className="flex items-center gap-4">
+          <div className="mb-8">
+            <div className="flex items-center gap-4 mb-4">
               <div className="relative">
                 <img
                   src={character.image}

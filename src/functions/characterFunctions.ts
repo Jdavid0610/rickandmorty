@@ -29,3 +29,10 @@ export const removeCharacterFromFavorite = (name: string) => {
     removeValue("favorites");
   }
 };
+
+export const getStarredCharacters = () => {
+  const favorites: string[] = Object.values(
+    getValue("favorites") || []
+  ) as string[];
+  return favorites;
+};

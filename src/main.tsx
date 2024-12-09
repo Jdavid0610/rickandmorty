@@ -4,20 +4,23 @@ import "./index.css";
 import App from "./App.tsx";
 import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 import { BrowserRouter } from "react-router-dom";
-import Layout from "./components/layout/layout.tsx";
+import { getStarredCharacters } from "./functions/characterFunctions.ts";
+import { useFavoritesCharactersStore } from "./storage/favoritesCharactersStore.ts";
 
 const client = new ApolloClient({
   uri: import.meta.env.VITE_GRAPHQL_URI,
   cache: new InMemoryCache(),
 });
 
+const favorites = getStarredCharacters();
+
+useFavoritesCharactersStore.setState({ favorites });
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ApolloProvider client={client}>
       <BrowserRouter>
-        <Layout>
-          <App />
-        </Layout>
+        <App />
       </BrowserRouter>
     </ApolloProvider>
   </StrictMode>
