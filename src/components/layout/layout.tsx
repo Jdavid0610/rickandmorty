@@ -6,8 +6,8 @@ import { CiSearch } from "react-icons/ci";
 import { GiSettingsKnobs } from "react-icons/gi";
 import { LayoutProps } from "./layout.interface";
 import { IoArrowBack } from "react-icons/io5";
-import { getStarredCharacters } from "@/functions/characterFunctions";
 import { useFavoritesCharactersStore } from "@/storage/favoritesCharactersStore";
+import { FaSortAlphaDown, FaSortAlphaUp } from "react-icons/fa";
 
 const Layout = ({ children }: LayoutProps) => {
   const [search, setSearch] = useState("");
@@ -15,9 +15,13 @@ const Layout = ({ children }: LayoutProps) => {
   const [characterSelected, setCharacterSelected] = useState(false);
   const { favorites } = useFavoritesCharactersStore();
   const [filterActive, setFilterActive] = useState(false);
-  const [filter, setFilter] = useState({
-    character: "",
-    species: "",
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [filter, setFilter] = useState<{
+    character: "all" | "starred" | "others";
+    species: "all" | "human" | "alien";
+  }>({
+    character: "all",
+    species: "all",
   });
   const [starredCharacterData, setStarredCharacterData] = useState<any[]>([]);
   const [displayedCharacters, setDisplayedCharacters] = useState<any[]>([]);
@@ -32,13 +36,47 @@ const Layout = ({ children }: LayoutProps) => {
 
   useEffect(() => {
     const characters = data?.characters?.results || [];
-    setStarredCharacterData(
-      characters.filter((character: any) => favorites.includes(character.name))
+    const filteredCharacters = characters.filter((character: any) => {
+      const searchLower = search.toLowerCase();
+      const matchesSearch =
+        character.name.toLowerCase().includes(searchLower) ||
+        character.status.toLowerCase().includes(searchLower) ||
+        character.gender.toLowerCase().includes(searchLower);
+
+      const matchesSpecies =
+        filter.species === "all" ||
+        character.species.toLowerCase() === filter.species.toLowerCase();
+
+      return matchesSearch && matchesSpecies;
+    });
+
+    const sortedCharacters = [...filteredCharacters].sort((a, b) => {
+      const comparison = a.name.localeCompare(b.name);
+      return sortOrder === "asc" ? comparison : -comparison;
+    });
+
+    const starredChars = sortedCharacters.filter((character: any) =>
+      favorites.includes(character.name)
     );
-    setDisplayedCharacters(
-      characters.filter((character: any) => !favorites.includes(character.name))
+    const otherChars = sortedCharacters.filter(
+      (character: any) => !favorites.includes(character.name)
     );
-  }, [data, favorites]);
+
+    if (filter.character === "all") {
+      setStarredCharacterData(starredChars);
+      setDisplayedCharacters(otherChars);
+    } else if (filter.character === "starred") {
+      setStarredCharacterData(starredChars);
+      setDisplayedCharacters([]);
+    } else {
+      setStarredCharacterData([]);
+      setDisplayedCharacters(otherChars);
+    }
+  }, [data, favorites, sortOrder, search, filter]);
+
+  const toggleSortOrder = () => {
+    setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+  };
 
   return (
     <div className="flex min-h-screen bg-white">
@@ -60,11 +98,22 @@ const Layout = ({ children }: LayoutProps) => {
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search for results"
+                placeholder="Search by name, status or gender"
                 className="w-full pl-8 pr-4 py-2 rounded-lg bg-gray-100 focus:outline-none"
               />
               <CiSearch className="absolute left-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
             </div>
+            <button
+              onClick={toggleSortOrder}
+              className="p-2 hover:bg-primary-200 rounded-lg"
+              title={sortOrder === "asc" ? "Sort Z to A" : "Sort A to Z"}
+            >
+              {sortOrder === "asc" ? (
+                <FaSortAlphaDown className="w-4 h-4 text-primary-600" />
+              ) : (
+                <FaSortAlphaUp className="w-4 h-4 text-primary-600" />
+              )}
+            </button>
             <GiSettingsKnobs
               onClick={() => setFilterActive(!filterActive)}
               className={`text-primary-600 cursor-pointer hover:bg-primary-200 ${
@@ -81,13 +130,40 @@ const Layout = ({ children }: LayoutProps) => {
                 <div>
                   <p className="text-sm text-gray-500 mb-2">Character</p>
                   <div className="flex gap-2">
-                    <button className="px-4 py-2 rounded-full bg-primary-50 text-primary-600">
+                    <button
+                      onClick={() =>
+                        setFilter((prev) => ({ ...prev, character: "all" }))
+                      }
+                      className={`px-4 py-2 rounded-full ${
+                        filter.character === "all"
+                          ? "bg-primary-50 text-primary-600"
+                          : "bg-white border border-gray-200"
+                      }`}
+                    >
                       All
                     </button>
-                    <button className="px-4 py-2 rounded-full bg-white border border-gray-200">
+                    <button
+                      onClick={() =>
+                        setFilter((prev) => ({ ...prev, character: "starred" }))
+                      }
+                      className={`px-4 py-2 rounded-full ${
+                        filter.character === "starred"
+                          ? "bg-primary-50 text-primary-600"
+                          : "bg-white border border-gray-200"
+                      }`}
+                    >
                       Starred
                     </button>
-                    <button className="px-4 py-2 rounded-full bg-white border border-gray-200">
+                    <button
+                      onClick={() =>
+                        setFilter((prev) => ({ ...prev, character: "others" }))
+                      }
+                      className={`px-4 py-2 rounded-full ${
+                        filter.character === "others"
+                          ? "bg-primary-50 text-primary-600"
+                          : "bg-white border border-gray-200"
+                      }`}
+                    >
                       Others
                     </button>
                   </div>
@@ -97,22 +173,44 @@ const Layout = ({ children }: LayoutProps) => {
                 <div>
                   <p className="text-sm text-gray-500 mb-2">Specie</p>
                   <div className="flex gap-2">
-                    <button className="px-4 py-2 rounded-full bg-primary-50 text-primary-600">
+                    <button
+                      onClick={() =>
+                        setFilter((prev) => ({ ...prev, species: "all" }))
+                      }
+                      className={`px-4 py-2 rounded-full ${
+                        filter.species === "all"
+                          ? "bg-primary-50 text-primary-600"
+                          : "bg-white border border-gray-200"
+                      }`}
+                    >
                       All
                     </button>
-                    <button className="px-4 py-2 rounded-full bg-white border border-gray-200">
+                    <button
+                      onClick={() =>
+                        setFilter((prev) => ({ ...prev, species: "human" }))
+                      }
+                      className={`px-4 py-2 rounded-full ${
+                        filter.species === "human"
+                          ? "bg-primary-50 text-primary-600"
+                          : "bg-white border border-gray-200"
+                      }`}
+                    >
                       Human
                     </button>
-                    <button className="px-4 py-2 rounded-full bg-white border border-gray-200">
+                    <button
+                      onClick={() =>
+                        setFilter((prev) => ({ ...prev, species: "alien" }))
+                      }
+                      className={`px-4 py-2 rounded-full ${
+                        filter.species === "alien"
+                          ? "bg-primary-50 text-primary-600"
+                          : "bg-white border border-gray-200"
+                      }`}
+                    >
                       Alien
                     </button>
                   </div>
                 </div>
-
-                {/* Filter Button */}
-                <button className="w-full py-2 bg-gray-50 text-gray-600 rounded-lg">
-                  Filter
-                </button>
               </div>
             </div>
           )}

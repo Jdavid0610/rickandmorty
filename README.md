@@ -93,3 +93,46 @@ To run the project locally, follow these steps:
 - **Routing**: React Router is used for navigating between different pages.
 
 For more detailed information on the configuration and setup, refer to the respective configuration files in the project.
+
+## Using the Rick and Morty API with GraphQL
+
+This application uses the Rick and Morty GraphQL API to fetch character data. The API is integrated using Apollo Client, which allows for efficient data fetching and caching.
+
+### Setup
+
+1. **Environment Variable**: Ensure that the `VITE_GRAPHQL_URI` environment variable is set to the Rick and Morty GraphQL API endpoint. This is typically done in a `.env` file at the root of your project.
+
+   ```plaintext
+   VITE_GRAPHQL_URI=https://rickandmortyapi.com/graphql
+   ```
+
+2. **Apollo Client Configuration**: The Apollo Client is configured in the `src/main.tsx` file. It uses the `VITE_GRAPHQL_URI` to connect to the API.
+
+   ```typescript:src/main.tsx
+   startLine: 10
+   endLine: 13
+   ```
+
+### Querying Data
+
+The application uses GraphQL queries to fetch data. For example, the `getCharacters` query is used to retrieve character information based on a search term.
+
+- **Query Definition**: The GraphQL query is defined using the `gql` template literal.
+
+  ```typescript:src/api/graphql/getCharacters/getCharacters.ts
+  startLine: 4
+  endLine: 23
+  ```
+
+- **Using the Query**: The `useQuery` hook from Apollo Client is used to execute the query and manage the loading, error, and data states.
+
+  ```typescript:src/api/graphql/getCharacters/getCharacters.ts
+  startLine: 25
+  endLine: 30
+  ```
+
+### Example Usage
+
+To fetch characters, you can use the `getCharacters` function, which takes a search parameter and returns the loading state, any errors, and the data.
+
+I use to implement this way because it's the most efficient way to fetch data from the API and it's easy to use. Also, i ussually implement a stub strategy to fetch data from the API in case the API is not available and i can use the stub data to render the UI.
