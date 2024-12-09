@@ -2,6 +2,10 @@
 
 This project is a React application using TypeScript and Vite, designed to explore characters from the Rick and Morty universe. It leverages GraphQL for data fetching and Zustand for state management.
 
+## Deployment
+
+This project is deployed on AWS Amplify. You can access it [here](https://main.d2lsdny8bquuew.amplifyapp.com).
+
 ## Project Structure
 
 - **src/**: Contains the main source code for the application.
